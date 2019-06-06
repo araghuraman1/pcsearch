@@ -26,6 +26,25 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.7.0'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.0'
 
+    testImplementation 'com.mashape.unirest:unirest-java:1.4.9'
+    testImplementation 'org.apache.httpcomponents:httpclient:4.3.6'
+    testImplementation 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    testImplementation 'org.apache.httpcomponents:httpmime:4.3.6'
+    testImplementation 'org.json:json:20140107'
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+
+    testRuntimeOnly 'com.mashape.unirest:unirest-java:1.4.9'
+    testRuntimeOnly 'org.apache.httpcomponents:httpclient:4.3.6'
+    testRuntimeOnly 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    testRuntimeOnly 'org.apache.httpcomponents:httpmime:4.3.6'
+    testRuntimeOnly 'org.json:json:20140107'
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+
+
+}
+
+test {
+    useJUnitPlatform()
 }
 
 task buildZip(type: Zip) {
