@@ -1,14 +1,31 @@
+group 'personalcapital.demo'
+version '1.2-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+}
+
 apply plugin: 'java'
 
 repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 1.8
+
+
 dependencies {
-    compile (
-        'com.amazonaws:aws-lambda-java-core:1.2.0',
-        'com.amazonaws:aws-lambda-java-events:2.2.6'
-    )
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.2.6'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.11.563'
+
+
+    implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.7.0'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.0'
+
 }
 
 task buildZip(type: Zip) {
@@ -20,3 +37,5 @@ task buildZip(type: Zip) {
 }
 
 build.dependsOn buildZip
+
+

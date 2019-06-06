@@ -1,7 +1,6 @@
 package demo.personalcapital;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -27,13 +26,14 @@ import java.util.stream.Stream;
  *
  *
  */
-public class SearchHandler implements RequestHandler<Map<String,String>, PCResponse> {
+public class SearchHandler  {
 
     private static final String ELASTIC_SEARCH_URL = "elasticSearchUrl";
     private static final String ELASTIC_SEARCH_INDEX = "elasticSearchIndex";
 
-    @Override
-    public PCResponse handleRequest(Map<String, String> input, Context context){
+
+    public PCResponse handleRequest(PCRequest input, Context context) throws IOException, NoResultsException{
+
 
         String elasticSearchUrl = System.getenv(ELASTIC_SEARCH_URL);
         String elasticSearchIndex = System.getenv(ELASTIC_SEARCH_INDEX);
@@ -41,20 +41,30 @@ public class SearchHandler implements RequestHandler<Map<String,String>, PCRespo
 
         //Build the search request to ES
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        String[] ids = new String[input.values().size()];
-        input.values().toArray(ids);
         BoolQueryBuilder root = QueryBuilders.boolQuery();
-        for(Map.Entry<String,String> entry : input.entrySet()) {
-            root.must(QueryBuilders.matchQuery(entry.getKey(),entry.getValue()));
+
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        if(input.getPlanName()!=null && !input.getPlanName().isEmpty()) {
+            boolQueryBuilder.must(QueryBuilders.matchPhraseQuery("PLAN_NAME",input.getPlanName()));
         }
+        if(input.getSponsorName()!=null && !input.getSponsorName().isEmpty()) {
+            boolQueryBuilder.must(QueryBuilders.matchPhraseQuery("SPONSOR_DFE_NAME",input.getSponsorName()));
+        }
+
+        if(input.getSponsorState()!=null && !input.getSponsorState().isEmpty()) {
+            boolQueryBuilder.must(QueryBuilders.multiMatchQuery(input.getSponsorState()," SPONS_DFE_LOC_FORGN_PROV_ST","SPONS_DFE_LOC_US_STATE","SPONS_DFE_MAIL_FORGN_PROV_ST","SPONS_DFE_MAIL_US_STATE"));
+        }
+
+
+        root.filter(boolQueryBuilder);
+
 
         System.out.println(root.toString(true));
         searchSourceBuilder.query(root);
         SearchRequest esRequest = new SearchRequest(elasticSearchIndex);
         esRequest.source(searchSourceBuilder);
 
-        //Execute the search request to ES and get back the response
-        try {
             SearchResponse esResponse = client.search(esRequest, RequestOptions.DEFAULT);
             //Parse the results
 
@@ -62,14 +72,13 @@ public class SearchHandler implements RequestHandler<Map<String,String>, PCRespo
 
             System.out.println("Number of hits: "+hits.length);
 
+            if(hits.length == 0) {
+                throw new NoResultsException();
+            }
+
             List<Map<String,String>> results = Stream.of(hits).parallel().map(this::convertTo).collect(Collectors.toList());
 
             return PCResponse.createSuccessResponse(results);
-
-        } catch(IOException ioex) {
-            ioex.printStackTrace();
-            return PCResponse.createFailureResponse("An internal error occured. Could not finish executing search");
-        }
 
     }
 
@@ -82,7 +91,10 @@ public class SearchHandler implements RequestHandler<Map<String,String>, PCRespo
     private Map<String,String> convertTo(SearchHit hit){
         Map<String,String> output = new HashMap<>();
         for(Map.Entry<String,Object> entry : hit.getSourceAsMap().entrySet()) {
-            output.put(entry.getKey(),String.valueOf(entry.getValue()));
+            if(entry.getKey()!=null && !entry.getKey().equalsIgnoreCase("message")) {
+                output.put(entry.getKey(),String.valueOf(entry.getValue()));
+            }
+
         }
         return output;
     }

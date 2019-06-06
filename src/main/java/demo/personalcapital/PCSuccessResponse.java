@@ -5,6 +5,10 @@ import java.util.Map;
 
 public class PCSuccessResponse implements PCResponse {
 
+    public int getNumResults(){
+        return this.results.size();
+    }
+
     private List<Map<String,String>> results;
 
     PCSuccessResponse(List<Map<String,String>> results) {
@@ -19,7 +23,5 @@ public class PCSuccessResponse implements PCResponse {
         this.results = results;
     }
 
-    public int getNumResults(){
-        return this.results.size();
-    }
+
 }
