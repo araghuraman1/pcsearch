@@ -45,7 +45,7 @@ public class TestService {
                         .queryString("planname","KS")
                         .asJson();
 
-        Assertions.assertTrue( Integer.parseInt(String.valueOf(response.getBody().getObject().get("numResults")))==10);
+        Assertions.assertTrue( Integer.parseInt(String.valueOf(response.getBody().getObject().get("numResults")))==22);
 
     }
 
@@ -56,7 +56,7 @@ public class TestService {
                         .asJson()
         );
 
-        Assertions.assertTrue( Integer.parseInt(String.valueOf(response.getBody().getObject().get("numResults")))==10);
+        Assertions.assertTrue( Integer.parseInt(String.valueOf(response.getBody().getObject().get("numResults")))==1000);
 
     }
 

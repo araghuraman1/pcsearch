@@ -30,4 +30,14 @@ public class PCRequest {
     public void setPlanName(String planName) {
         this.planName = planName;
     }
+
+    private String userToken;
+
+    public String getUserToken(){
+        return userToken;
+    }
+
+    public void setUserToken(String userToken){
+        this.userToken = userToken;
+    }
 }

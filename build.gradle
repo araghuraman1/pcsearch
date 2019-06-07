@@ -1,5 +1,5 @@
 group 'personalcapital.demo'
-version '1.2-SNAPSHOT'
+version '1.21-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -18,13 +18,22 @@ sourceCompatibility = 1.8
 
 
 dependencies {
+
+    //For writing Lambda
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.0'
     implementation 'com.amazonaws:aws-lambda-java-events:2.2.6'
     implementation 'com.amazonaws:aws-java-sdk-core:1.11.563'
 
-
+    //Elasticsearch client
     implementation 'org.elasticsearch.client:elasticsearch-rest-client:6.7.0'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.7.0'
+
+    //For accessing AWS services as a client
+    //implementation platform('software.amazon.awssdk:bom:2.5.57')
+
+    //for accessing dynamoDB as a client
+    //implementation 'software.amazon.awssdk:dynamodb'
+
 
     testImplementation 'com.mashape.unirest:unirest-java:1.4.9'
     testImplementation 'org.apache.httpcomponents:httpclient:4.3.6'

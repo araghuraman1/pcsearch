@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface PCResponse {
 
-    static PCResponse createSuccessResponse(List<Map<String,String>> results) {
-        return new PCSuccessResponse(results);
+    static PCResponse createSuccessResponse(List<Map<String,String>> results, String userToken) {
+        return new PCSuccessResponse(results,userToken);
     }
 }

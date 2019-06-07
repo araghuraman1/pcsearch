@@ -11,8 +11,19 @@ public class PCSuccessResponse implements PCResponse {
 
     private List<Map<String,String>> results;
 
-    PCSuccessResponse(List<Map<String,String>> results) {
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
+
+    private String userToken;
+
+    PCSuccessResponse(List<Map<String,String>> results, String userToken) {
         this.results = results;
+        this.userToken = userToken;
     }
 
     public List<Map<String,String>> getResults(){

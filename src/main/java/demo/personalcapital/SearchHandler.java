@@ -1,9 +1,11 @@
 package demo.personalcapital;
 
 import com.amazonaws.services.lambda.runtime.Context;
+//import software.amazon.awssdk.services.dynamodb.*;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -62,23 +64,30 @@ public class SearchHandler  {
 
         System.out.println(root.toString(true));
         searchSourceBuilder.query(root);
+        searchSourceBuilder.size(1000);
         SearchRequest esRequest = new SearchRequest(elasticSearchIndex);
         esRequest.source(searchSourceBuilder);
 
-            SearchResponse esResponse = client.search(esRequest, RequestOptions.DEFAULT);
-            //Parse the results
 
-            SearchHit[]  hits = esResponse.getHits().getHits();
+        SearchResponse esResponse = client.search(esRequest, RequestOptions.DEFAULT);
 
-            System.out.println("Number of hits: "+hits.length);
 
-            if(hits.length == 0) {
-                throw new NoResultsException();
-            }
 
-            List<Map<String,String>> results = Stream.of(hits).parallel().map(this::convertTo).collect(Collectors.toList());
 
-            return PCResponse.createSuccessResponse(results);
+
+        //Parse the results
+
+        SearchHit[]  hits = esResponse.getHits().getHits();
+
+        System.out.println("Number of hits: "+hits.length);
+
+        if(hits.length == 0) {
+            throw new NoResultsException();
+        }
+
+        List<Map<String,String>> results = Stream.of(hits).parallel().map(this::convertTo).collect(Collectors.toList());
+
+        return PCResponse.createSuccessResponse(results,input.getUserToken());
 
     }
 
